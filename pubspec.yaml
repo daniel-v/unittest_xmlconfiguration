@@ -1,0 +1,7 @@
+name: unittest_xmlconfiguration
+version: 0.1.0
+author: Daniel Varga
+description: XML Configuration for Dart's unittests
+dependencies:
+  unittest: any
+  xml: '>=2.0.0 <3.0.0'
