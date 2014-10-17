@@ -14,21 +14,30 @@ class _XmlUnitEnvironmentConfigBuilder {
     _className = className;
   }
 
+  void set rootPackageName(String packageName) {
+    _packageName = packageName;
+  }
+
   XmlUnitEnvironmentConfig buildConfiguration() {
-    return new XmlUnitEnvironmentConfig._(autoStart: _autoStartTests, outputPath: _outputXmlPath, className: _className);
+    return new XmlUnitEnvironmentConfig._(autoStart: _autoStartTests,
+        outputPath: _outputXmlPath,
+        className: _className,
+        packageName: _packageName);
   }
 
   bool _autoStartTests = true;
   String _outputXmlPath = './';
   String _className = '';
+  String _packageName = 'dart';
 }
 
 class XmlUnitEnvironmentConfig {
 
-  XmlUnitEnvironmentConfig._({bool autoStart: true, String outputPath: './', String className: ''})
+  XmlUnitEnvironmentConfig._({bool autoStart: true, String outputPath: './', String className: '', String packageName: 'dart'})
       : _autoStart = autoStart,
         _outputXmlPath = outputPath,
-        _className = className;
+        _className = className,
+        _packageName = packageName;
 
   static _XmlUnitEnvironmentConfigBuilder builder() {
     return new _XmlUnitEnvironmentConfigBuilder();
@@ -37,6 +46,7 @@ class XmlUnitEnvironmentConfig {
   final bool _autoStart;
   final String _outputXmlPath;
   final String _className;
+  final String _packageName;
 }
 
 
@@ -46,7 +56,8 @@ class XmlUnitConfiguration extends SimpleConfiguration {
     XmlUnitConfiguration config = new XmlUnitConfiguration._()
       .._autoStart = xmlUnitConfig._autoStart
       .._outputPath = xmlUnitConfig._outputXmlPath
-      .._className = xmlUnitConfig._className;
+      .._className = xmlUnitConfig._className
+      .._packageName = xmlUnitConfig._packageName;
     unittestConfiguration = config;
     return config;
   }
@@ -92,7 +103,7 @@ class XmlUnitConfiguration extends SimpleConfiguration {
     XmlBuilder xmlBuilder = new XmlBuilder();
     xmlBuilder.processing('xml', 'version="1.0" encoding="UTF-8"');
     xmlBuilder.element("testsuit", attributes: {
-      "name" : _className,
+      "name" : _packagedClassName,
       "hostname": this._hostname,
       "tests": results.length.toString(),
       "failures": failed.toString(),
@@ -129,7 +140,7 @@ class XmlUnitConfiguration extends SimpleConfiguration {
         : testCaseDescription;
     xmlBuilder.element("testcase", attributes: {
       "id": testCase.id.toString(),
-      "classname": _className,
+      "classname": _packagedClassName,
       "name": descriptionWithoutClassname,
       "time": (time / 1000.0).toString()
     }, nest: () {
@@ -190,12 +201,17 @@ class XmlUnitConfiguration extends SimpleConfiguration {
         .replaceAll('"', '&quot;');
   }
 
+  String get _packagedClassName {
+    return "${_packageName}.${_className}";
+  }
+
   bool get autoStart => _autoStart;
   bool _autoStart = true;
 
   StringSink _output;
   String _outputPath;
   String _className;
+  String _packageName;
 
   ReceivePort _receivePort;
   Map<TestCase, List<String>> _messagesByTestCase;
