@@ -92,7 +92,7 @@ class XmlUnitConfiguration extends SimpleConfiguration {
     XmlBuilder xmlBuilder = new XmlBuilder();
     xmlBuilder.processing('xml', 'version="1.0" encoding="UTF-8"');
     xmlBuilder.element("testsuit", attributes: {
-      "name" : "All tests",
+      "name" : _className,
       "hostname": this._hostname,
       "tests": results.length.toString(),
       "failures": failed.toString(),
@@ -122,11 +122,15 @@ class XmlUnitConfiguration extends SimpleConfiguration {
   }
 
   void _buildXmlTestCaseResult(TestCase testCase, XmlBuilder xmlBuilder) {
-    var time = testCase.runningTime != null ? testCase.runningTime.inMilliseconds : 0;
+    int time = testCase.runningTime != null ? testCase.runningTime.inMilliseconds : 0;
+    String testCaseDescription = testCase.description;
+    String descriptionWithoutClassname = testCaseDescription.startsWith(_className)
+        ? testCaseDescription.replaceFirst(_className,  "").trim()
+        : testCaseDescription;
     xmlBuilder.element("testcase", attributes: {
       "id": testCase.id.toString(),
-      "classname": testCase.currentGroup,
-      "name": testCase.description,
+      "classname": _className,
+      "name": descriptionWithoutClassname,
       "time": (time / 1000.0).toString()
     }, nest: () {
       _buildXmlTestResult(testCase, xmlBuilder);

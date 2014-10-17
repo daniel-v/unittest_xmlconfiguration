@@ -5,5 +5,12 @@ This library provides a way for Dart's unittest results to be written to XML fil
 
 ## Changelog
 
+#####v0.1.1
+Xml generation updated so that
+ 
+* teststuit diplays that classname on which the test are being run
+* testcase name does not include classname any more
+
 #####v0.1.0
 Initial release
+
